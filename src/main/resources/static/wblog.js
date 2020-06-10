@@ -124,8 +124,8 @@ function initBlogTb(items) {
             '           </tbody>' +
             ' </table>'
         $("#blogTable").html(_html);
-        $('.viewer').viewer();
     }
+    $('.viewer').viewer();
 }
 function checknum(obj){
    var curNum = $(obj).val().length;

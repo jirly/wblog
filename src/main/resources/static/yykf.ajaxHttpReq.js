@@ -17,30 +17,9 @@ $yykf.ajaxHttpReq = null;
                 success: function (result,status,xhr) {
                     var accessState = xhr.getResponseHeader("Access-State");
                     if (accessState == "unlogin") {
-                        if (!$yykf.dialog) {
-                            openTxWin("/admin/ajaxLoginNew.jsp",
-                                {title: '请重新登录',
-                                    id:"ART_DIALOG_ReLogin",
-                                    lock:true,
-                                    width:"400px",
-                                    height:"350px"
-                                });
-                        } else {
-                            $yykf.dialog.open("/admin/ajaxLoginNew.jsp",
-                                {title: '请重新登录',
-                                    id:"ART_DIALOG_ReLogin",
-                                    lock:true,
-                                    width:"400px",
-                                    height:"350px"
-                                }
-                            );
-                        }
+                        console.error("unlogin");
                     } else if (accessState == "unauthorized") {
-                        if (!$yykf.dialog) {
-                            alertMessage("没有权限进行此操作!!!");
-                        } else {
-                            $yykf.dialog.alert("没有权限进行此操作!!!");
-                        }
+                        console.error("unauthorized");
                     } else {
                         if($.isFunction(successCallBack)){
                             successCallBack(result);
@@ -52,11 +31,7 @@ $yykf.ajaxHttpReq = null;
                     var responseText = result["responseText"];
                     var statusText = result["statusText"];
                     var msg = "staus:" + status + ",responseText:" + responseText + ",statusText:" + statusText;
-                    /*if (!$yykf.dialog) {
-                        alertMessage("请求" + url + "发生错误，" + msg);
-                    } else {
-                        $yykf.dialog.alert("请求" + url + "发生错误，" + msg);
-                    }*/
+                    console.error(msg);
                 }
             })
 		}
