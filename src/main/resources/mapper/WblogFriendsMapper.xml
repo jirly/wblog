@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.jirly.sso.mapper.WblogFriendsMapper">
+
+    <resultMap id="wbfriendMap" type="com.jirly.sso.domain.WblogFriends">
+        <id property="id" column="id" />
+        <result property="attentionedUser" column="attentionedUser" />
+        <result property="attentionedUserName" column="attentionedUserName" />
+        <result property="attentionUser" column="attentionUser" />
+        <result property="attentionUserName" column="attentionUserName" />
+        <result property="attentionTime" column="attentionTime" />
+    </resultMap>
+
+    <sql id="findResultsSql">
+        from wb_friends wbf join user se on se.id = wbf.attentionedUser join user se2 on se2.id = wbf.attentionUser where 1=1
+        <if test="params.attentionedUser != null and params.attentionedUser > 0">
+           and wbf.attentionedUser = #{params.attentionedUser}
+        </if>
+    </sql>
+
+    <select id="findResultCount" resultType="int">
+        select count(*)
+        <include refid="findResultsSql" />
+    </select>
+
+
+    <select id="findResults" resultMap="wbfriendMap">
+        select wbf.*,se.name as attentionedUserName,se2.name as attentionUserName
+        <include refid="findResultsSql"/>
+        order by wbf.id desc
+        <if test="page != null">limit #{page.from}, #{page.size}</if>
+    </select>
+
+    <insert id="insert">
+        insert into wb_friends(attentionedUser,attentionUser,attentionTime) values(#{attentionedUser},#{attentionUser},now())
+    </insert>
+
+    <delete id="delete">
+        delete from wb_friends where attentionedUser = #{attentionedUser} and attentionUser = #{attentionUser}
+    </delete>
+
+    <delete id="deleteById">
+        delete from wb_friends where id = #{id}
+    </delete>
+
+    <select id="listUnAttUserList" resultType="map">
+        select se.id,se.name,se.email as email ,se.phone as phone,IFNULL(se.userPicUrl,'/images/wblog/userPic.jpg') as userPic from user se
+        where se.deleteStatus = 0  and  se.id  not in (
+           select distinct wbf.attentionedUser from wb_friends  wbf   where wbf.attentionUser = #{params.attentionUser}
+        )
+        order by se.id desc
+        <if test="page != null">limit #{page.from}, #{page.size}</if>
+    </select>
+
+    <select id="listAttUserList" resultType="map">
+        select se.id,se.name,se.email,se.phone,IFNULL(se.userPicUrl,'/images/wblog/userPic.jpg') as userPic from user
+        where  se.id   in (
+        select distinct wbf.attentionedUser from wb_friends  wbf   where wbf.attentionUser = #{params.attentionUser}
+        )
+        order by se.id desc
+        <if test="page != null">limit #{page.from}, #{page.size}</if>
+    </select>
+
+    <select id="getAttCount" resultType="int">
+        select count(distinct attentionedUser) from wb_friends where attentionUser = #{curUser} union all
+        select count(distinct attentionUser) from wb_friends where attentionedUser = #{curUser}
+    </select>
+</mapper>

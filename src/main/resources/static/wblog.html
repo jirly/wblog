@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>微博</title>
+    <link rel="stylesheet" type="text/css" href="./wblog.css?v4" />
+    <script src="./jquery-1.7.2.min.js?v2"></script>
+    <script src="./viewer.js"></script>
+    <script src="./viewer.css"></script>
+    <script src="./yykf.ajaxHttpReq.js"></script>
+    <script src="./wblog.js?v2"></script>
+</head>
+<body>
+<a href="javascript:scroll(0,0)" id="top"> <img src="../images/wblog/returntotop.jpg" border="0" /></a>
+<table id="header" align="center" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+        <td width="20%" align="left"><img src="../images/wblog/logo.png" width="178" height="62" /></td>
+    </tr>
+</table>
+
+<table border="0" align="center" cellpadding="0" cellspacing="0" id="container" >
+    <tbody>
+    <tr>
+        <td width="670" height="850" valign="top">
+            <form>
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" id="input">
+                    <tbody>
+                    <tr>
+                        <td width="160" height="48">&nbsp;</td>
+                        <td width="479">
+                            <table width="483" border="0">
+                                <tbody>
+                                <tr>
+                                    <td width="477" height="1">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td height="15" align="right" >
+                                        您还可以输入<input id="remainNum" disabled="disabled" maxlength="4" name="remain" size="3" value="140" style="border:none;background:transparent;font-size:20px;">个字
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td height="89"><span></span></td>
+                        <td>
+                            <textarea id="wblogContent" style="resize: none;border:none;border-color: #FFFFFF;width: 470px;height: 72px; border-style: solid;" wrap="PHYSICAL"  onkeydown="checknum(this);"  onkeyup="checknum(this);"></textarea>
+                        </td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td height="35">&nbsp;</td>
+                        <td align="right" valign="middle">
+                            选择图片:<input id="uploadPic" type="file"  value="上传图片"  style="border:none;background:transparent;" multiple>
+                            <a id="publishBtn" href="javascript:publish();" style="font-size:20px;text-decoration: none;color:#09C">发 布</a>
+                        </td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </form>
+
+            <table id="zoneTalbe" width="100%" border="0" align="center" cellpadding="0" cellspacing="0" id="zone" style="margin-top: 10px">
+                <tbody>
+                <tr id="zoneTr">
+                    <td align="center"><a href="javascript:void(0);" onclick="chooseZone(this,-1);" class="herfStype current">#广场</a></td>
+                    <td align="center"><a href="javascript:void(0);" onclick="chooseZone(this,0);" class="herfStype">关注</a></td>
+                    <td align="center"><a href="javascript:void(0);" onclick="chooseZone(this,-2);" class="herfStype">我的微博</a></td>
+                    <!--<td align="center"><a href="javascript:void(0);" onclick="chooseZone(this,2);" class="herfStype">交易</a></td>
+                    <td align="center"><a href="javascript:void(0);" onclick="chooseZone(this,3);" class="herfStype">租房</a></td>
+                    <td align="center"><a href="javascript:void(0);" onclick="chooseZone(this,4);" class="herfStype">宠物</a></td>
+                    <td align="center"><a href="javascript:void(0);" onclick="chooseZone(this,5);" class="herfStype">招聘</a></td>
+                    <td align="center"><a href="javascript:void(0);" onclick="chooseZone(this,6);" class="herfStype">感谢</a></td>-->
+                </tr>
+                <tr></tr>
+                </tbody>
+            </table>
+
+            <table id='serarchForm' width="100%" border="0" align="center" cellpadding="0" cellspacing="0"  style="margin-top: 10px">
+                <tbody>
+                <tr>
+                    <td width="33%" align="center">
+                        <table width="165" border="0" align="center" cellpadding="0" cellspacing="0">
+                        </table>
+                    </td>
+                    <td width="18%" align="right">&nbsp;</td>
+                    <td width="49%" align="center">
+                        <form>
+                            <input type="text" class="searchCotent" id="searchCotent">
+                            <input type="button"  onclick="reLoadWblog();" value="搜索">
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <!-- weibo 开始-->
+            <div id="blogTable"></div>
+            <!-- 分页处理 -->
+            <div style="margin-bottom: 20px">
+                <table align="center" >
+                    <tbody>
+                    <tr>
+                        <td>
+                            <a>共<span id="totalPage">0</span>页</a>
+                            <a style="text-decoration: none;color:#09C" href="javascript:goPage(1)">首页</a>&nbsp;
+                            第 <input type="text" id="pageInput" style="width: 20px;"/>&nbsp;页
+                            <input type="hidden" id="pageID" value="1">
+                            <a style="text-decoration: none;color:#09C" href="javascript:goPage(0);">go</a>
+                            <a style="text-decoration: none;color:#09C" href="javascript:goPage(2);">下一页</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- weibo 结束-->
+        </td>
+        <td width="280" align="center" valign="top" class="pageright">
+            <table align="center" id="userinfo">
+                <tbody>
+                <tr>
+                    <td width="25%" rowspan="2"><a href="javascript:$('#uploadUserPic').click();"><img id="userImg" src="" width="50" height="50"></a></td>
+                    <input type="file" id="uploadUserPic" name="file" style="display:none" onchange ="uploadUserPic(this)">
+                    <td width="75%"><span id="blogUserLoginName" style="color: #09C"></span></td>
+                </tr>
+                <tr>
+                    <td valign="top"><span id="blogUserName"></span></td>
+                </tr>
+                <tr>
+                    <td colspan="2" align="left">
+                        <table width="80%" border="0" align="left" cellpadding="3" cellspacing="0">
+                            <tbody>
+                            <tr>
+                                <td align="center" class="split2"><a href="javascript:void(0)">关注</a><br><span id="attCount">0</span>
+                                </td>
+                                <td align="center" class="split2"><a href="javascript:void(0)">粉丝</a><br><span id="attedCount">0</span>
+                                </td>
+                                <td align="center"><a href="javascript:void(0)">微博</a><br><span id="blogCount">0</span></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="split1"><a href="javascript:$('#uploadUserPic').click();">个人头像设置</a></td>
+                </tr>
+                </tbody>
+            </table>
+            <table border="0" align="center" cellpadding="0" cellspacing="0" id="userlist">
+                <tbody>
+                <tr id="userListTitleDiv">
+                    <td class="title" align="center"><a href="javascript:selectUserType(0);">未关注的人</a></td>
+                    <td align="center" class="title"><a href="javascript:selectUserType(1);">已关注的人</a></td>
+                </tr>
+                </tbody>
+            </table>
+            <table class="userdetail">
+                <tbody>
+                <tr>
+                    <td>
+                        <a href="javascript:void(0)" onclick="reloadUserList();" style="text-decoration: none">[换一换]</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

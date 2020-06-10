@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.jirly.sso.mapper.WblogMapper">
+
+    <resultMap id="wblogMap" type="com.jirly.sso.domain.Wblog">
+        <id property="id" column="id" />
+        <result property="zoneType" column="zoneType" />
+        <result property="zoneName" column="zoneName" />
+        <result property="createUser" column="createUser" />
+        <result property="createUserName" column="createUserName" />
+        <result property="createTime" column="createTime" />
+        <result property="content" column="content" />
+        <result property="picAttaList" column="picAttaList" />
+        <result property="remarkCount" column="remarkCount"/>
+        <result property="upvoteCount" column="upvoteCount"/>
+        <result property="userPic" column="userPic"/>
+    </resultMap>
+
+    <sql id="findResultsSql">
+        from wb_wblog wb join user se on se.id = wb.createUser
+        left join wb_config wc on wc.id = wb.zoneType  where 1=1
+        <if test="params.zoneType != null">
+            <choose>
+                <when test="params.zoneType > 0">
+                    and wb.zoneType = #{params.zoneType}
+                </when>
+                <when test="params.zoneType == 0">
+                    and wb.createUser in (select distinct attentionedUser from wb_friends where attentionUser = #{params.curUser})
+                </when>
+                <when test="params.zoneType == -2">
+                    and wb.createUser = #{params.curUser}
+                </when>
+                <otherwise>
+
+                </otherwise>
+            </choose>
+        </if>
+        <if test="params.content != null and params.content != ''">
+            and wb.content like concat('%',#{params.content},'%')
+        </if>
+        <if test="params.createUser != null and params.createUser > 0">
+            and wb.createUser = #{params.createUser}
+        </if>
+    </sql>
+
+    <select id="findResultCount" resultType="int">
+        select count(*)
+        <include refid="findResultsSql" />
+    </select>
+
+
+    <select id="findResults" resultMap="wblogMap">
+        select wb.*,se.name as createUserName, (select count(*) from wb_wblog_remark wwr where wwr.blogId = wb.id) as remarkCount,
+        (select count(*) from wb_upvote wu where wu.blogId = wb.id) as upvoteCount,wc.zoneName as zoneName,
+        IFNULL(se.userPicUrl,'/images/wblog/userPic.jpg')  as userPic
+        <include refid="findResultsSql"/>
+        order by wb.id desc
+        <if test="page != null">limit #{page.from}, #{page.size}</if>
+    </select>
+
+    <insert id="insert">
+        insert into wb_wblog(zoneType,createUser,createTime,content,picAttaList) values(#{zoneType},#{createUser},now(),#{content},#{picAttaList})
+    </insert>
+
+    <delete id="deleteById">
+        delete from wb_wblog where id = #{id}
+    </delete>
+
+    <insert id="saveOrUpdateUserPic">
+        update user set userPicUrl = #{userPicUrl} where id = #{userId}
+    </insert>
+
+    <select id = "getUserPic" resultType="string">
+        select userPicUrl from user where id = #{userId}
+    </select>
+
+    <select id="getUserOtherInfo" resultType="map">
+        select name,loginName from user where id = #{curUser}
+    </select>
+
+    <select id="listConfig" resultType="map">
+        select  * from wb_config where 1=1
+        <if test="valid != null and valid == 1">
+            and valid = 1
+        </if>
+        order by sortVal
+    </select>
+
+    <insert id="addConfig">
+        insert into wb_config(zoneName,sortVal,valid,editUsers) values(#{zoneName},#{sortVal},1,#{editUsers})
+    </insert>
+
+    <update id="updateConfig">
+        update wb_config set zoneName = #{zoneName}, sortVal = #{sortVal},editUsers = #{editUsers}  where id = #{id}
+    </update>
+
+    <update id="validConfig">
+        update wb_config set valid = !valid where id = #{id}
+    </update>
+
+    <select id="getEditUsers" resultType="map">
+        select id,name,loginName from user where id in (${editUsers})
+    </select>
+</mapper>

@@ -1,0 +1,60 @@
+CREATE TABLE `wb_config` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键自增ID',
+  `zoneName` varchar(20) DEFAULT NULL COMMENT '栏目名称',
+  `sortVal` int(11) DEFAULT NULL COMMENT '排序值',
+  `valid` int(11) DEFAULT NULL COMMENT '是否生效1、有效 0、无效',
+  `editUsers` text COMMENT '可以编辑该栏目的用户',
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `wb_friends` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增id',
+  `attentionedUser` int(11) DEFAULT NULL COMMENT '公众人',
+  `attentionUser` int(11) DEFAULT NULL COMMENT '粉丝',
+  `attentionTime` datetime DEFAULT NULL COMMENT '关注时间',
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `wb_upvote` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键自增id',
+  `blogId` int(11) DEFAULT NULL COMMENT '微博id',
+  `upvoteUser` int(11) DEFAULT NULL COMMENT '点赞者',
+  `upvoteTime` datetime DEFAULT NULL COMMENT '点赞时间',
+  PRIMARY KEY (`id`),
+  KEY `INDEX_BLOG_ID` (`blogId`) USING BTREE
+);
+
+CREATE TABLE `wb_wblog_remark` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键自增id',
+  `blogId` int(11) DEFAULT NULL COMMENT '被评论的微博id',
+  `remarkUser` int(11) DEFAULT NULL COMMENT '评论者',
+  `remarkTime` datetime DEFAULT NULL COMMENT '评论时间',
+  `remarkContent` text COMMENT '评论内容',
+  PRIMARY KEY (`id`),
+  KEY `INDEX_BLOG_ID` (`blogId`) USING BTREE
+);
+
+CREATE TABLE `user` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(32) DEFAULT NULL,
+  `loginName` VARCHAR(32) DEFAULT NULL,
+  `loginPw` VARCHAR(32) DEFAULT NULL,
+  `phone` VARCHAR(12) DEFAULT NULL,
+  `email` VARCHAR(50) DEFAULT NULL,
+  `description` VARCHAR(100) DEFAULT NULL,
+  `deleteStatus` VARCHAR(1) DEFAULT '0',
+  `createTime` DATETIME DEFAULT NULL,
+  `userPicUrl` VARCHAR(200) DEFAULT NULL COMMENT '微博用户头像',
+  PRIMARY KEY (`id`)
+);
+
+insert into `wb_config` (`id`, `zoneName`, `sortVal`, `valid`, `editUsers`) values('1','人物专访','1','1','54,61,62,63,64,65,66');
+insert into `wb_config` (`id`, `zoneName`, `sortVal`, `valid`, `editUsers`) values('2','全民访谈','2','1','50,52');
+insert into `wb_config` (`id`, `zoneName`, `sortVal`, `valid`, `editUsers`) values('3','趣味客服','3','1','58,59');
+insert into `wb_config` (`id`, `zoneName`, `sortVal`, `valid`, `editUsers`) values('4','部门活动','4','1',NULL);
+insert into `wb_config` (`id`, `zoneName`, `sortVal`, `valid`, `editUsers`) values('5','招聘','5','0',NULL);
+insert into `wb_config` (`id`, `zoneName`, `sortVal`, `valid`, `editUsers`) values('6','感谢','6','0',NULL);
+insert into `user` (`id`, `name`, `loginName`, `loginPw`, `phone`, `email`, `description`, `deleteStatus`, `createTime`, `userPicUrl`) values('26','jirly','曾泽林','123456','18620813271','386774738@qq.com',NULL,'0','2020-06-10 10:22:10',NULL);
+
+
+

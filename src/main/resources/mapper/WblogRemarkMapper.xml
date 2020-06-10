@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.jirly.sso.mapper.WblogRemarkMapper">
+
+    <resultMap id="wbremarkMap" type="com.jirly.sso.domain.WblogRemark">
+        <id property="id" column="id" />
+        <result property="blogId" column="blogId" />
+        <result property="remarkUser" column="remarkUser" />
+        <result property="remarkUserName" column="remarkUserName" />
+        <result property="remarkUserPicPath" column="remarkUserPicPath" />
+        <result property="remarkTime" column="remarkTime" />
+        <result property="remarkContent" column="remarkContent" />
+    </resultMap>
+
+    <sql id="findResultsSql">
+        from wb_wblog_remark wbr join user se on se.id = wbr.remarkUser   where 1=1
+        <if test="params.blogId != null and params.blogId > 0">
+           and wbr.blogId = #{params.blogId}
+        </if>
+    </sql>
+
+    <select id="findResultCount" resultType="int">
+        select count(*)
+        <include refid="findResultsSql" />
+    </select>
+
+
+    <select id="findResults" resultMap="wbremarkMap">
+        select wbr.*,se.name as remarkUserName,IFNULL(se.userPicUrl,'/images/wblog/userPic.jpg') as remarkUserPicPath
+        <include refid="findResultsSql"/>
+        order by wbr.id desc
+        <if test="page != null">limit #{page.from}, #{page.size}</if>
+    </select>
+
+    <insert id="insert">
+        insert into wb_wblog_remark(blogId,remarkUser,remarkTime,remarkContent) values(#{blogId},#{remarkUser},now(),#{remarkContent})
+    </insert>
+
+    <delete id="deleteById">
+        delete from wb_wblog_remark where id = #{id}
+    </delete>
+</mapper>

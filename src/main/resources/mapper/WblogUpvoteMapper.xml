@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.jirly.sso.mapper.WblogUpvoteMapper">
+
+    <resultMap id="wbupvoteMap" type="com.jirly.sso.domain.WblogUpvote">
+        <id property="id" column="id" />
+        <result property="blogId" column="blogId" />
+        <result property="upvoteUser" column="upvoteUser" />
+        <result property="upvoteUserName" column="upvoteUserName" />
+        <result property="upvoteTime" column="upvoteTime" />
+    </resultMap>
+
+    <sql id="findResultsSql">
+        from wb_upvote wbu join user se on se.id = wbu.upvoteUser  where 1=1
+        <if test="params.blogId != null and params.blogId > 0">
+           and wbu.blogId = #{params.blogId}
+        </if>
+    </sql>
+
+    <select id="findResultCount" resultType="int">
+        select count(*)
+        <include refid="findResultsSql" />
+    </select>
+
+
+    <select id="findResults" resultMap="wbupvoteMap">
+        select wbu.*,se.name as upvoteUserName
+        <include refid="findResultsSql"/>
+        order by wbu.id desc
+        <if test="page != null">limit #{page.from}, #{page.size}</if>
+    </select>
+
+    <insert id="insert">
+        <selectKey keyProperty="count" resultType="int" order="BEFORE">
+            select count(*) from wb_upvote where upvoteUser = #{upvoteUser} and blogId = #{blogId}
+        </selectKey>
+        <if test="count > 0">
+            update wb_upvote set upvoteTime = now() where upvoteUser = #{upvoteUser} and blogId = #{blogId}
+        </if>
+        <if test="count==0">
+            insert into wb_upvote(blogId,upvoteUser,upvoteTime) values(#{blogId},#{upvoteUser},now())
+        </if>
+    </insert>
+
+    <delete id="deleteById">
+        delete from wb_upvote where blogId = #{blogId} and upvoteUser = #{upvoteUser}
+    </delete>
+
+</mapper>
