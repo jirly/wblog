@@ -1,12 +1,13 @@
 package com.jirly.sso.utils;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.util.Properties;
 
 public class Configuration {
-	private static final Logger logger = Logger.getLogger(Configuration.class);
+	private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
 	private static Configuration instance = new Configuration();
 	private static Properties prop = null;
 	static {
@@ -15,7 +16,7 @@ public class Configuration {
 			prop = new Properties();
 			prop.load(inputStream);
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 	}

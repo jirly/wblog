@@ -4,7 +4,8 @@ import com.jirly.sso.domain.PageRequest;
 import com.jirly.sso.domain.Wblog;
 import com.jirly.sso.mapper.WblogMapper;
 import com.jirly.sso.service.WblogService;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,7 @@ import java.util.Map;
  */
 @Service
 public class WblogServiceImpl implements WblogService {
-    private static Logger logger = Logger.getLogger(WblogServiceImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(WblogServiceImpl.class);
 
     @Autowired
     private WblogMapper wblogMapper;

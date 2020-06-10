@@ -8,7 +8,8 @@ import com.jirly.sso.service.WblogService;
 import com.jirly.sso.service.WblogUpvoteService;
 import com.jirly.sso.utils.Bs2Tool;
 import com.sun.deploy.util.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,7 +33,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("wblog")
 public class WblogController {
-    private static Logger logger = Logger.getLogger(WblogController.class);
+    private static Logger logger = LoggerFactory.getLogger(WblogController.class);
 
     @Autowired
     private WblogService wblogService;
