@@ -69,6 +69,7 @@ public class WblogController {
             result.put("curUserName",userOtherInfo.get("name"));
             result.put("curUserLoginName",userOtherInfo.get("loginName"));
             Map<String,Object> params = new HashMap<String, Object>();
+            params.put("valid",1);
             result.put("zoneList",wblogService.listConfig(params));
             result.put("curUser",curUser);
             return JsonResp.success(result);
